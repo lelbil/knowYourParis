@@ -12,31 +12,55 @@ import {
 } from 'react-native';
 import {Col, Row, Grid} from "react-native-easy-grid";
 import Answer from './src/answerButton'
+import { generatePossibleAnswers, stringifyAnswer } from './util'
 
 type Props = {};
 //TODO: validate props for answer buttons
 
 export default class App extends Component<Props> {
+    constructor(props) {
+        super(props)
+        this.state = {
+            currentQuestion: 0,
+            data: [
+                {
+                    question: 'Place d\'italie',
+                    possibleAnswers: [13]
+                },
+                {
+                    question: 'Boulevard Haussmann',
+                    answer: [8, 9]
+                },
+                {
+                    question: 'Rue petit',
+                    answer: [19]
+                },
+            ]
+        }
+    }
     render() {
+        const { currentQuestion, data } = this.state
+        const answers = generatePossibleAnswers(data[currentQuestion].possibleAnswers).map(answer => <Answer answer={stringifyAnswer(answer)}/>)
+
         return (
             <View style={styles.container}>
-                <View style={styles.questionContainer}><Text style={styles.questionText}>Place d'Italie</Text></View>
+                <View style={styles.questionContainer}><Text style={styles.questionText}>{data[currentQuestion].question}</Text></View>
                 <View style={styles.answersContainer}>
                     <Grid>
                         <Col style={styles.col}>
                             <Row style={styles.row}>
-                                <Answer answer='5ème arr.'/>
+                                {answers[0]}
                             </Row>
                             <Row style={styles.row}>
-                                <Answer answer='16ème arr.'/>
+                                {answers[1]}
                             </Row>
                         </Col>
                         <Col style={styles.col}>
                             <Row style={styles.row}>
-                                <Answer answer='13ème arr.'/>
+                                {answers[2]}
                             </Row>
                             <Row style={styles.row}>
-                                <Answer answer='1er arr.'/>
+                                {answers[3]}
                             </Row>
                         </Col>
                     </Grid>
