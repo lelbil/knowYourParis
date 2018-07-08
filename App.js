@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import {Col, Row, Grid} from "react-native-easy-grid";
 import Answer from './src/answerButton'
-import { generatePossibleAnswers, stringifyAnswer } from './util'
+import { generatePossibleAnswers, includes } from './util'
 
 type Props = {};
 //TODO: validate props for answer buttons
@@ -29,43 +29,77 @@ export default class App extends Component<Props> {
                 },
                 {
                     question: 'Boulevard Haussmann',
-                    answer: [8, 9]
+                    possibleAnswers: [8, 9]
                 },
                 {
                     question: 'Rue petit',
-                    answer: [19]
+                    possibleAnswers: [19]
                 },
-            ]
+            ],
+            gameOver: false,
+            points: 0,
         }
     }
-    render() {
+
+    checkAnswer = answer => {
         const { currentQuestion, data } = this.state
-        const answers = generatePossibleAnswers(data[currentQuestion].possibleAnswers).map(answer => <Answer answer={stringifyAnswer(answer)}/>)
+        const current = data[currentQuestion]
+        let points = this.state.points
+        let gameOver = false
+
+        if (includes(current.possibleAnswers, answer)) points++
+
+        if (currentQuestion === data.length - 1) {
+            gameOver = true
+        }
+
+        this.setState({
+            points,
+            gameOver,
+            currentQuestion: gameOver ? 0 : this.state.currentQuestion + 1 //TODO: temporary hack for when game is over
+        })
+    }
+
+    render() {
+        const { currentQuestion, data, gameOver, points } = this.state
+        const answers = generatePossibleAnswers(data[currentQuestion].possibleAnswers).map(answer =>
+            <Answer
+                checkAnswer={() => this.checkAnswer(answer)}
+                answer={answer}
+                isCorrect={includes(data[currentQuestion].possibleAnswers, answer)}
+            />
+        )
 
         return (
-            <View style={styles.container}>
-                <View style={styles.questionContainer}><Text style={styles.questionText}>{data[currentQuestion].question}</Text></View>
-                <View style={styles.answersContainer}>
-                    <Grid>
-                        <Col style={styles.col}>
-                            <Row style={styles.row}>
-                                {answers[0]}
-                            </Row>
-                            <Row style={styles.row}>
-                                {answers[1]}
-                            </Row>
-                        </Col>
-                        <Col style={styles.col}>
-                            <Row style={styles.row}>
-                                {answers[2]}
-                            </Row>
-                            <Row style={styles.row}>
-                                {answers[3]}
-                            </Row>
-                        </Col>
-                    </Grid>
+            gameOver ?
+                <View>
+                    <Text>Game Over!</Text>
+                    <Text>{points}/{data.length}</Text>
                 </View>
-            </View>
+                :
+                <View style={styles.container}>
+                    <View style={styles.questionContainer}><Text style={styles.questionText}>{data[currentQuestion].question}</Text></View>
+                    <View style={styles.answersContainer}>
+                        <Grid>
+                            <Col style={styles.col}>
+                                <Row style={styles.row}>
+                                    {answers[0]}
+                                </Row>
+                                <Row style={styles.row}>
+                                    {answers[1]}
+                                </Row>
+                            </Col>
+                            <Col style={styles.col}>
+                                <Row style={styles.row}>
+                                    {answers[2]}
+                                </Row>
+                                <Row style={styles.row}>
+                                    {answers[3]}
+                                </Row>
+                            </Col>
+                        </Grid>
+                    </View>
+                </View>
         );
     }
 }
@@ -92,7 +126,6 @@ const styles = StyleSheet.create({
     answersContainer: {
         height: '30%',
         width: '90%',
-        //backgroundColor: 'gold',
     },
     answerButton: {},
     col: {

@@ -4,14 +4,13 @@ import {
     Text,
     TouchableOpacity
 } from 'react-native';
-import answer from '../module/answered'
 
 type Props = {};
 
 export default class App extends Component<Props> {
     render() {
         return (
-            <TouchableOpacity onPress={() => {answer(this.props.answer + ' android')}}>
+            <TouchableOpacity onPress={this.props.checkAnswer}>
                 <View style={{
                     borderRadius: 15,
                     borderWidth: 2,

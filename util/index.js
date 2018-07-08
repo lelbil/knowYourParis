@@ -7,7 +7,7 @@
  */
 const getRandomInt = max => Math.floor(Math.random() * Math.floor(max))
 
-const includes = (array, item) => array.indexOf(item) > -1
+exports.includes = (array, item) => array.indexOf(item) > -1
 
 const shuffle = array => {
     const dupArray = array.slice()
@@ -28,7 +28,7 @@ exports.generatePossibleAnswers = correctAnswers => {
 
     for (let i = 0; i < 3; i++ ) {
         let randomAnswer = getRandomInt(20) + 1
-        while(includes(possibleAnswers, randomAnswer) || includes(correctAnswers, randomAnswer)) {
+        while(exports.includes(possibleAnswers, randomAnswer) || exports.includes(correctAnswers, randomAnswer)) {
             randomAnswer = getRandomInt(20) + 1
         }
         possibleAnswers.push(randomAnswer)
